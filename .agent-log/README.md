@@ -23,7 +23,7 @@ The application-level `pnpm check` (typecheck, lint, Vitest, Playwright) remains
 
 ## Activate and verify locally
 
-1. Open a fresh Claude Code session in the actual repository. Use `/hooks` to inspect the three configured logger events.
+1. Open a fresh Claude Code session in the actual repository. Use `/hooks` to inspect the three configured logger events and the PreToolUse environment guard.
 2. Open a fresh local Codex session in the same repository. Use `/hooks` to review and trust the current hook definitions. Project-local hooks require a trusted project. Do not change user-level trust files from a script.
 3. In each client, ask it to run the harmless commands `node -e "process.exit(0)"` and `node -e "process.exit(7)"`, then run `pnpm agent:log`. Verify each client's pre/post records, full session identity, and success/failure outcomes. No product file needs to be edited.
 4. If an outcome is `unknown`, inspect a sanitized sample of that client's hook payload and add a regression case before claiming support for that payload shape.
@@ -31,6 +31,16 @@ The application-level `pnpm check` (typecheck, lint, Vitest, Playwright) remains
 
 Current live activation is **not yet verified**. The installed Codex CLI failed during review; the desktop runtime was not tested. These registrations target supported local runtimes, not cloud-orchestrated chats. No hooks read `transcript_path`, user-level configuration, or private agent directories.
 
-The logger does not rewrite tool input and is not a secrets-access enforcement hook. Follow AGENTS.md boundaries; permission rules and actual client enforcement are distinct from logging.
+## Environment-file guard
+
+Both clients register the same `.claude/hooks/protect-env.mjs` for `PreToolUse`, alongside the logger. A matching request exits 2 with a fixed denial message; safe requests exit 0 without granting permission or rewriting input. Malformed JSON or missing inputs for recognized file/shell tools also deny. The guard never reads target files or executes the supplied command.
+
+Protected path components start with `.env` (case-insensitive), including `.env.example`, `.env.sample`, and `.envrc`, matching AGENTS.md's `.env*` rule. The guard checks explicit `file_path`, `notebook_path`, and `path` arguments, plus every Add/Update/Delete/Move target in Codex `apply_patch`. Patch content is not interpreted as a target. Shell checking conservatively rejects literal `.env` references; it may reject harmless mentions too.
+
+This is an input guard, not filesystem isolation. It does not resolve aliases/symlinks, inspect broad directory reads/searches or implicit file loading, decode constructed shell paths, or cover arbitrary custom tool argument formats. Keep client permissions and AGENTS.md boundaries in force. Hook startup failures, disabled/untrusted hooks, and timeouts are not covered by the script's malformed-input denial.
+
+Logging and guarding are independent; do not rely on their execution order. A denied request may leave an unmatched pre record. The summary deliberately does not infer a denial from this alone; keep the actual guard diagnostic as denial evidence. No new denial records are fabricated.
+
+After changing registrations, restart/review hooks in both local clients and trust the updated Codex definitions. Regression tests use synthetic payloads only; no real environment files are read or modified. Live activation remains unverified.
 
 References: [Claude hooks](https://code.claude.com/docs/en/hooks), [Codex hooks](https://learn.chatgpt.com/docs/hooks).

@@ -7,6 +7,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { normalize } from "./log-agent-action.mjs";
+import { denialReason } from "../.claude/hooks/protect-env.mjs";
 import { summarize } from "./agent-log-summary.mjs";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
@@ -19,6 +20,10 @@ const commands = {
   claude: 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/log-action.mjs"',
   codex: 'node "$(git rev-parse --show-toplevel)/.codex/hooks/log-action.mjs"',
 };
+const guardCommands = {
+  claude: 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/protect-env.mjs"',
+  codex: 'node "$(git rev-parse --show-toplevel)/.claude/hooks/protect-env.mjs"',
+};
 const payload = (overrides = {}) => ({
   session_id: "11111111-1111-4111-8111-111111111111", tool_use_id: "call-1",
   hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command: "pnpm check" }, ...overrides,
@@ -30,7 +35,7 @@ const logRows = (root) => readFileSync(logPath(root), "utf8").trim().split("\n")
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "agentflow hooks-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  for (const name of [".claude/hooks/log-action.mjs", ".codex/hooks/log-action.mjs", "scripts/log-agent-action.mjs", "scripts/agent-log-summary.mjs"]) {
+  for (const name of [".claude/hooks/log-action.mjs", ".claude/hooks/protect-env.mjs", ".codex/hooks/log-action.mjs", "scripts/log-agent-action.mjs", "scripts/agent-log-summary.mjs"]) {
     mkdirSync(dirname(join(root, name)), { recursive: true });
     copyFileSync(join(ROOT, name), join(root, name));
   }
@@ -39,19 +44,23 @@ function fixture(t) {
   return root;
 }
 
-function invoke(root, agent, event) {
+function invoke(root, agent, event, handler = 0) {
   const env = { ...process.env, PATH: `${dirname(process.execPath)}:${process.env.PATH}` };
   delete env.CLAUDE_PROJECT_DIR;
   if (agent === "claude") env.CLAUDE_PROJECT_DIR = root;
-  const command = registrations[agent][event.hook_event_name][0].hooks[0].command;
+  const command = registrations[agent][event.hook_event_name][0].hooks[handler].command;
   return spawnSync("/bin/sh", ["-c", command], { cwd: join(root, "app"), env, input: JSON.stringify({ cwd: join(root, "app"), ...event }), encoding: "utf8", timeout: 10000 });
 }
 
-test("both provider registrations target only the logger and required events", () => {
+test("both provider registrations retain logging and register the guard only before tools", () => {
   for (const agent of ["claude", "codex"]) {
     const expected = agent === "claude" ? ["PreToolUse", "PostToolUse", "PostToolUseFailure"] : ["PreToolUse", "PostToolUse"];
     assert.deepEqual(Object.keys(registrations[agent]).sort(), expected.sort());
-    for (const event of expected) assert.deepEqual(registrations[agent][event], [{ matcher: "*", hooks: [{ type: "command", command: commands[agent], timeout: 10 }] }]);
+    for (const event of expected) {
+      const hooks = [{ type: "command", command: commands[agent], timeout: 10 }];
+      if (event === "PreToolUse") hooks.push({ type: "command", command: guardCommands[agent], timeout: 10 });
+      assert.deepEqual(registrations[agent][event], [{ matcher: "*", hooks }]);
+    }
   }
   const scripts = readJSON(join(ROOT, "package.json")).scripts;
   assert.equal(scripts["hooks:selftest"], "node --test scripts/hooks-selftest.mjs");
@@ -229,6 +238,85 @@ test("concurrent adapters append intact records to the same repository log", asy
   assert.equal(rows.length, 20);
   assert.equal(new Set(rows.map((row) => row.tool_use_id)).size, 20);
   assert.equal(new Set(rows.map((row) => row.agent)).size, 2);
+});
+
+for (const tool of ["Read", "Edit", "Write", "MultiEdit", "NotebookEdit"]) {
+  test(`environment guard denies protected paths for ${tool}, including examples`, () => {
+    const key = tool === "NotebookEdit" ? "notebook_path" : "file_path";
+    for (const path of [".env", ".env.local", ".env.example", ".env.sample", ".envrc", "nested/.ENV.production", "C:\\project\\.env.test", "nested/.env-data/file.txt"]) {
+      assert.match(denialReason(payload({ tool_name: tool, tool_input: { [key]: path } })), /\[protect-env\] Blocked/);
+    }
+    assert.equal(denialReason(payload({ tool_name: tool, tool_input: { [key]: "lib/environment.ts", content: "process.env.SYNTHETIC" } })), null);
+  });
+}
+
+for (const action of ["Add File", "Update File", "Delete File", "Move to"]) {
+  test(`environment guard checks apply_patch ${action} targets`, () => {
+    const patch = `*** Begin Patch\r\n*** Update File: safe.txt\r\n*** ${action}: nested/.env.example\r\n+SYNTHETIC_PRIVATE_MARKER\r\n*** End Patch\r\n`;
+    const reason = denialReason(payload({ tool_name: "apply_patch", tool_input: { command: patch } }));
+    assert.match(reason, /\[protect-env\] Blocked/);
+    assert.equal(reason.includes("SYNTHETIC_PRIVATE_MARKER"), false);
+  });
+}
+
+test("safe patches can discuss .env in content without changing protected paths", () => {
+  const patch = "*** Begin Patch\n*** Add File: docs/guard.md\n+Do not read .env.local\n*** Update File: app/page.tsx\n*** Move to: app/example.tsx\n@@\n-process.env.EXAMPLE\n+demo\n*** End Patch";
+  assert.equal(denialReason(payload({ tool_name: "apply_patch", tool_input: { command: patch } })), null);
+});
+
+test("environment guard covers explicit path arguments in other tools", () => {
+  for (const tool of ["Grep", "mcp__filesystem__read_file"]) {
+    assert.match(denialReason(payload({ tool_name: tool, tool_input: { path: "nested/.env" } })), /Blocked/);
+    assert.equal(denialReason(payload({ tool_name: tool, tool_input: { path: "README.md" } })), null);
+  }
+});
+
+test("environment guard denies literal .env shell references without executing input", () => {
+  for (const command of ["cat .env", 'cat "nested/.env.local"', "cp sample.txt .env.example", "cat .env*", "cat .env && pnpm check", "SYNTHETIC_PRIVATE_MARKER=.env.production"]) {
+    const reason = denialReason(payload({ tool_input: { command } }));
+    assert.match(reason, /Blocked/);
+    assert.equal(reason.includes("SYNTHETIC_PRIVATE_MARKER"), false);
+  }
+  for (const command of ["pnpm hooks:selftest", "pnpm check", "git status --short", 'node -e "console.log(process.env.NODE_ENV)"']) {
+    assert.equal(denialReason(payload({ tool_input: { command } })), null);
+  }
+  assert.match(denialReason(payload({ tool_name: "exec_command", tool_input: { cmd: "cat .env" } })), /Blocked/);
+});
+
+test("environment guard ignores non-pre events and makes no allow decision for unrelated tools", () => {
+  assert.equal(denialReason({ hook_event_name: "PostToolUse" }), null);
+  assert.equal(denialReason(payload({ tool_name: "WebFetch", tool_input: { url: "https://example.invalid" } })), null);
+});
+
+for (const agent of ["claude", "codex"]) {
+  test(`${agent} configured environment guard blocks, allows, and fails closed from a subdirectory`, (t) => {
+    const root = fixture(t);
+    const result = invoke(root, agent, payload({ tool_name: "Read", tool_input: { file_path: "../.env.example" } }), 1);
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /\[protect-env\] Blocked/);
+    assert.equal(result.stdout, "");
+    const patch = invoke(root, agent, payload({ tool_name: "apply_patch", tool_input: { command: "*** Begin Patch\n*** Update File: safe.txt\n*** Move to: .env\n*** End Patch" } }), 1);
+    assert.equal(patch.status, 2);
+    const safe = invoke(root, agent, payload(), 1);
+    assert.equal(safe.status, 0);
+    assert.equal(safe.stdout, "", "no automatic allow or input rewrite");
+    assert.equal(safe.stderr, "");
+    const invalid = invoke(root, agent, payload({ tool_input: null }), 1);
+    assert.equal(invalid.status, 2);
+    assert.match(invalid.stderr, /cannot validate/);
+    assert.equal(existsSync(logPath(root)), false, "guard does not fabricate logging records");
+  });
+}
+
+test("environment guard denies malformed JSON and missing protected-tool fields without leaking payloads", (t) => {
+  const root = fixture(t);
+  for (const input of ["SYNTHETIC_PRIVATE_MARKER", "null", "{}", JSON.stringify(payload({ tool_name: "Read", tool_input: {} })), JSON.stringify(payload({ tool_name: "apply_patch", tool_input: { command: "SYNTHETIC_PRIVATE_MARKER" } }))]) {
+    const result = spawnSync(process.execPath, [join(root, ".claude/hooks/protect-env.mjs")], { input, encoding: "utf8" });
+    assert.equal(result.status, 2);
+    assert.equal(result.stdout, "");
+    assert.match(result.stderr, /cannot validate/);
+    assert.equal(result.stderr.includes("SYNTHETIC_PRIVATE_MARKER"), false);
+  }
 });
 
 
