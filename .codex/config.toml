@@ -1,4 +1,2 @@
-# Codex project config.
-# .env* files are already excluded via .gitignore (Codex respects it by default).
-# This file documents that boundary explicitly for Codex sessions in this repo:
-# do not read, create, or edit .env or .env.* files (including .env.example / .env.sample).
+# Project hooks are declared in hooks.json. Review and trust them in Codex before use.
+# .gitignore is not an access-control policy; follow the boundaries in AGENTS.md.

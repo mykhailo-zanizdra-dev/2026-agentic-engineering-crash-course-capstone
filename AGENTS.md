@@ -28,4 +28,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - The labeled, keyboard-accessible waitlist form handles empty/whitespace-only and invalid emails, valid-email success, and correction followed by resubmission. Submission is visibly identified as a demo.
 - Unit tests and Chromium E2E tests at both widths cover the specified behavior. `pnpm check` passes and actual verification output is saved.
 - An independent Checker has reviewed the implementation without fixing code during review; findings have fixes or documented resolutions.
+- Before commits that add or change behavior and at final review, use the protocol in `.claude/agents/reviewer.md` from a different Checker session/tool. The Checker reports without editing; the human or Maker saves the attributed report.
 - The capstone PR links specifications, review reports, verification runs, and relevant commits; distinguishes human and agent decisions; and includes a 1–2 minute video showing the product and workflow.
+
+## Conventions and boundaries
+
+- Keep pure logic in `lib/` with a neighboring Vitest test. The import alias `@/*` points to the repository root. Use Ukrainian UI copy and carry that choice into the specification.
+- Use Conventional Commits, one logical change per commit.
+- Ask before adding dependencies or editing `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, agent settings, `.mcp.json`, or CI unless the current task already authorizes the change.
+- Do not touch `.env*`, delete tests or disable lint rules to get green, force-push, or use `rm -rf`. Logging hooks do not enforce these boundaries.
+- Never read real user-level agent configuration or transcripts in code, tests, or demos. Use synthetic event fixtures; keep live logs local and commit only reviewed evidence.
+- Run `pnpm hooks:selftest` when changing logging. Distinguish synthetic checks from live hook activation; record the actual agent and full session identity.
+- Do not edit the managed Next.js block above; `next dev` re-adds it.
