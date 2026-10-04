@@ -41,3 +41,8 @@ vendor/
 Thumbs.db
 .idea/
 .vscode/
+
+# Live agent logs stay local; commit reviewed evidence under docs/runs/.
+/.agent-log/actions.jsonl
+/.agent-log/summary.txt
+/.agent-log/.write-check-*
