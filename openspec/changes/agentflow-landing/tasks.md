@@ -14,9 +14,9 @@
 
 ## 3. Page structure and static sections
 
-- [ ] 3.1 Set `lang="uk"` and AgentFlow metadata; replace the scaffold page with the eight ordered sections and anchors; verify E2E test "all eight sections render in order" passes at both widths
-- [ ] 3.2 Implement Navbar, Hero, Features, How It Works, Pricing, FAQ and Footer in Ukrainian, with CTAs linking to the `#waitlist` anchor; verify E2E tests for navigation links reaching their sections, CTAs pointing at the waitlist section, and no payment controls pass
-- [ ] 3.3 Add the responsive overflow E2E test and verify no horizontal overflow at 375 px and 1440 px
+- [x] 3.1 Set `lang="uk"` and AgentFlow metadata; replace the scaffold page with the eight ordered sections and anchors; verify E2E test "all eight sections render in order" passes at both widths
+- [x] 3.2 Implement Navbar, Hero, Features, How It Works, Pricing, FAQ and Footer in Ukrainian, with CTAs linking to the `#waitlist` anchor; verify E2E tests for navigation links reaching their sections, CTAs pointing at the waitlist section, and no payment controls pass
+- [x] 3.3 Add the responsive overflow E2E test and verify no horizontal overflow at 375 px and 1440 px
 
 ## 4. Waitlist form
 
