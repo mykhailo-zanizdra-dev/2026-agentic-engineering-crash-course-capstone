@@ -9,8 +9,8 @@
 
 ## 2. Waitlist validation logic
 
-- [ ] 2.1 Write failing Vitest tests in `lib/waitlist.test.ts` for empty, whitespace-only, invalid, valid and padded-valid email and for the exact required and invalid-format messages, and record the red run
-- [ ] 2.2 Implement the shared schema and messages in `lib/waitlist.ts`; verify `pnpm test:unit` passes
+- [x] 2.1 Write failing Vitest tests in `lib/waitlist.test.ts` for empty, whitespace-only, invalid, valid and padded-valid email and for the exact required and invalid-format messages, and record the red run
+- [x] 2.2 Implement the shared schema and messages in `lib/waitlist.ts`; verify `pnpm test:unit` passes
 
 ## 3. Page structure and static sections
 
