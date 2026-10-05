@@ -24,6 +24,14 @@ The repository already declares Next.js, React, TypeScript, Tailwind CSS, ESLint
 
 Claude Code is the default Maker and Codex the default Checker. They are development tools, not runtime dependencies. AgentFlow does not call an AI service.
 
+## OpenSpec setup
+
+OpenSpec 1.14.0 is installed locally as the exact `@fission-ai/openspec` devDependency, recorded in `package.json` and `pnpm-lock.yaml`. Run `pnpm install` after cloning; no global OpenSpec installation is required. Use `pnpm exec openspec ...` from the repository root, including in generated workflow examples.
+
+The core profile is initialized for Claude Code and Codex with the `spec-driven` schema. Project context lives in `openspec/config.yaml`; planning artifacts must be in English, while the approved UI language remains Ukrainian.
+
+Reload the agent session after setup to discover the generated workflows. Start planning with `/opsx:propose` in Claude Code or `$openspec-propose` in Codex CLI/IDE; in Codex desktop, select `openspec-propose` from Skills. Review and commit the specification before starting implementation. Initialization alone does not create a product specification.
+
 ## Implementation boundaries
 
 - Keep page content static; use a small client component for the waitlist form.
@@ -34,7 +42,7 @@ Claude Code is the default Maker and Codex the default Checker. They are develop
 
 ## Planned command contract
 
-The existing scaffold provides `pnpm dev`, `pnpm build`, and `pnpm lint`. Typecheck, unit tests, E2E tests, and the combined check command are planned requirements. Existing commands have not been verified during this documentation handoff.
+The existing scaffold provides `pnpm dev`, `pnpm build`, and `pnpm lint`. Typecheck, unit tests, E2E tests, and the combined check command are planned requirements. See saved verification runs in `docs/runs/` for actual command outcomes.
 
 | Command | Responsibility |
 | --- | --- |

@@ -13,6 +13,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Persistent rules
 
 - Before implementation, read `PRODUCT_BRIEF.md`, `TECH_STACK.md`, and the active OpenSpec specification. Commit the specification before AgentFlow feature code; the existing scaffold is the baseline.
+- OpenSpec is a project-local devDependency. Run its CLI as `pnpm exec openspec ...` from the repository root, including when generated workflows show bare `openspec` commands.
 - Implement only specified functionality. Resolve missing or conflicting requirements in the specification first, and carry approved requirements unchanged into handoffs.
 - Keep one page at `/` and stay within the approved scope. Do not add backend/API routes, authentication, databases, AI APIs, external integrations, or other excluded features. Waitlist submission stays local without email persistence.
 - Keep business logic outside large UI components where practical. Share the Zod validation schema between the form and its unit tests.
