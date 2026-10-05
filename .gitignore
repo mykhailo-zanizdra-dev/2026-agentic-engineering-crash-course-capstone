@@ -46,3 +46,7 @@ Thumbs.db
 /.agent-log/actions.jsonl
 /.agent-log/summary.txt
 /.agent-log/.write-check-*
+
+# Test output
+/test-results/
+/playwright-report/

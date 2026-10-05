@@ -2,10 +2,10 @@
 
 ## 1. Tooling and verification contract
 
-- [ ] 1.1 Add Zod, Vitest and Playwright (stable versions, with approval per AGENTS.md); verify `pnpm install` succeeds and the lockfile is updated
-- [ ] 1.2 Add `typecheck`, `test:unit`, `test:e2e` and `check` scripts; verify `pnpm check` runs the four steps in order and exits nonzero when one fails
-- [ ] 1.3 Configure Playwright with Chromium projects at 375 px and 1440 px and an automatic `webServer`; verify a smoke test passes in both projects without manually starting a server
-- [ ] 1.4 Document one-time setup (Node version file, Playwright Chromium install) in README and verify the documented commands run as written
+- [x] 1.1 Add Zod, Vitest and Playwright (stable versions, with approval per AGENTS.md); verify `pnpm install` succeeds and the lockfile is updated
+- [x] 1.2 Add `typecheck`, `test:unit`, `test:e2e` and `check` scripts; verify `pnpm check` runs the four steps in order and exits nonzero when one fails
+- [x] 1.3 Configure Playwright with Chromium projects at 375 px and 1440 px and an automatic `webServer`; verify a smoke test passes in both projects without manually starting a server
+- [x] 1.4 Document one-time setup (Node version file, Playwright Chromium install) in SETUP.md (README.md is original course material and stays unchanged) and verify the documented commands run as written
 
 ## 2. Waitlist validation logic
 
