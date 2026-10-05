@@ -22,7 +22,9 @@ The repository already declares Next.js, React, TypeScript, Tailwind CSS, ESLint
 | Specification | OpenSpec | Define requirements, acceptance scenarios, and implementation tasks before writing product code. |
 | Version control | Git | Preserve specification order, implementation changes, reviews, and verification evidence. |
 
-Claude Code is the default Maker and Codex the default Checker. They are development tools, not runtime dependencies. AgentFlow does not call an AI service.
+Claude Code is the default tool for both roles: Sonnet for the Maker and Opus for the existing `reviewer`, invoked in a separate context as the Checker. The Checker reports without editing; the Maker applies fixes and runs verification. Codex remains available as an optional tool. These are development tools, not runtime dependencies. AgentFlow does not call an AI service.
+
+Start the Maker from the repository root with `claude --model sonnet`. The reviewer profile already declares `model: opus`; ask Claude to invoke the named reviewer as a fresh subagent. Confirm its actual selected model in the agent UI rather than relying only on the file. Model aliases can resolve to different versions, so record the actual selected models when available instead of assuming a version. See the [Claude Code model configuration](https://code.claude.com/docs/en/model-config) and [subagent documentation](https://code.claude.com/docs/en/sub-agents).
 
 ## OpenSpec setup
 

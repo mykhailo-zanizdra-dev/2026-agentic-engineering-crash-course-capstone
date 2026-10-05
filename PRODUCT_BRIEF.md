@@ -1,6 +1,6 @@
 # AgentFlow — Product Brief
 
-Status: Approved by the product owner on 2026-10-04.
+Status: Approved by the product owner on 2026-10-04; the workflow section was amended on 2026-10-05.
 
 ## Goal
 
@@ -61,7 +61,7 @@ The canonical `pnpm check` command runs typecheck → ESLint → Vitest unit tes
 
 Product Brief + Tech Stack → AGENTS.md → OpenSpec specification → commit specification → implementation → unit + E2E tests → `pnpm check` → independent review → fixes → `pnpm check` → final evidence → PR → 1–2 minute video.
 
-- Default roles: Claude Code is Maker; Codex is Checker. Roles may change explicitly, but implementation authors cannot independently review their own work. The Checker records findings without fixing code during review.
+- Workflow update approved by the product owner on 2026-10-05: use Claude Code for both roles, with Sonnet as Maker and the existing Opus `reviewer` as the stronger-model Checker in a separate subagent invocation or fresh session. The Checker must not have authored the changes and reports without fixing code. Record actual models and source/session identities in review evidence; label unknown metadata honestly. Codex remains optional, not a required review tool. Preserve previous reports as evidence of the workflow actually used at that time.
 - Shared sources of truth: this brief, TECH_STACK.md, AGENTS.md, OpenSpec, code, tests, Git history, and review reports. Do not rely on conversation history shared between agents.
 - Static context consists of project documents and rules. Dynamic context includes the current task, Git diff, and actual verification output supplied for that task.
 - Commit the OpenSpec specification before implementing AgentFlow features or extending the existing scaffold. This brief does not replace the specification.

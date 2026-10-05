@@ -29,7 +29,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - The labeled, keyboard-accessible waitlist form handles empty/whitespace-only and invalid emails, valid-email success, and correction followed by resubmission. Submission is visibly identified as a demo.
 - Unit tests and Chromium E2E tests at both widths cover the specified behavior. `pnpm check` passes and actual verification output is saved.
 - An independent Checker has reviewed the implementation without fixing code during review; findings have fixes or documented resolutions.
-- Before commits that add or change behavior and at final review, use the protocol in `.claude/agents/reviewer.md` from a different Checker session/tool. The Checker reports without editing; the human or Maker saves the attributed report.
+- Default workflow: Claude Code with Sonnet is Maker; the existing `reviewer` on Opus is Checker, invoked separately as a subagent or fresh session. A model switch in the Maker conversation alone is not independent review.
+- Before commits that add or change behavior and at final review, use `.claude/agents/reviewer.md`. The Checker must not have authored the changes and reports without editing. The human or Maker saves the report with the reviewed source identity, agent/session identities, and actual model versions when available; mark unavailable details as unknown.
 - The capstone PR links specifications, review reports, verification runs, and relevant commits; distinguishes human and agent decisions; and includes a 1–2 minute video showing the product and workflow.
 
 ## Conventions and boundaries
