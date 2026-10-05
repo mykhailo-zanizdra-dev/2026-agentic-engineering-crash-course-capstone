@@ -20,8 +20,8 @@
 
 ## 4. Waitlist form
 
-- [ ] 4.1 Implement the labeled client-side form in the Waitlist CTA section using the shared schema, announced feedback, demo note and local-only success state; verify E2E tests for exactly one form on the page, CTAs scrolling to the form, and empty, whitespace-only, invalid and valid submission pass
-- [ ] 4.2 Verify E2E tests for correction then resubmission, error after success, keyboard submission, no network request, no persistence after reload and announced error/success feedback pass at both widths
+- [x] 4.1 Implement the labeled client-side form in the Waitlist CTA section using the shared schema, announced feedback, demo note and local-only success state; verify E2E tests for exactly one form on the page, CTAs scrolling to the form, and empty, whitespace-only, invalid and valid submission pass
+- [x] 4.2 Verify E2E tests for correction then resubmission, error after success, keyboard submission, no network request, no persistence after reload and announced error/success feedback pass at both widths
 
 ## 5. Integration, review and evidence
 
