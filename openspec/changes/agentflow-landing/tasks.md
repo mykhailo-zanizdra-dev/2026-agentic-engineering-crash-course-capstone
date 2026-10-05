@@ -25,7 +25,7 @@
 
 ## 5. Integration, review and evidence
 
-- [ ] 5.1 Before each commit that adds or changes behavior, run the `reviewer` Checker as a separate invocation and save its report under `docs/reviews/`; verify the report names the reviewed source state
-- [ ] 5.2 Run the final independent review, apply fixes as Maker, and record each resolution in the saved report
-- [ ] 5.3 Run `pnpm check` and `pnpm build` after the fixes and save the actual output under `docs/runs/` with the tested commit SHA
-- [ ] 5.4 Visually inspect 375 px and 1440 px layouts and save a record of the inspection next to the run output
+- [x] 5.1 Before each commit that adds or changes behavior, run the `reviewer` Checker as a separate invocation and save its report under `docs/reviews/`; verify the report names the reviewed source state
+- [x] 5.2 Run the final independent review, apply fixes as Maker, and record each resolution in the saved report
+- [x] 5.3 Run `pnpm check` and `pnpm build` after the fixes and save the actual output under `docs/runs/` with the tested commit SHA
+- [x] 5.4 Visually inspect 375 px and 1440 px layouts and save a record of the inspection next to the run output

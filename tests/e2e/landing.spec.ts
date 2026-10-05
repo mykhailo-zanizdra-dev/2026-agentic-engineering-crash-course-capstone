@@ -59,8 +59,14 @@ test("informational sections have the specified content", async ({ page }) => {
   expect(await page.locator("#features li").count()).toBeGreaterThanOrEqual(3);
   const steps = page.locator("#how-it-works ol > li h3");
   await expect(steps).toHaveText(["Специфікація", "Реалізація", "Перевірка"]);
-  expect(await page.locator("#faq details").count()).toBeGreaterThanOrEqual(3);
+  const faq = await page.locator("#faq details").all();
+  expect(faq.length).toBeGreaterThanOrEqual(3);
+  for (const item of faq) {
+    await expect(item.locator("summary")).not.toHaveText("");
+    expect(((await item.locator("p").textContent()) ?? "").trim().length).toBeGreaterThan(0);
+  }
   await expect(page.locator("#footer")).toContainText("AgentFlow");
+  expect(((await page.locator("#footer p").nth(1).textContent()) ?? "").trim().length).toBeGreaterThan(0);
 });
 
 test("pricing has no payment controls", async ({ page }) => {
