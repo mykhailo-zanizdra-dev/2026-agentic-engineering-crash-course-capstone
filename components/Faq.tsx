@@ -21,9 +21,9 @@ export function Faq() {
       </h2>
       <div className="mt-8 space-y-3">
         {items.map((item) => (
-          <details key={item.q} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-            <summary className="cursor-pointer font-semibold">{item.q}</summary>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400">{item.a}</p>
+          <details key={item.q} className="faq-item rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+            <summary className="faq-summary cursor-pointer font-semibold">{item.q}</summary>
+            <p className="pt-2 text-zinc-600 dark:text-zinc-400">{item.a}</p>
           </details>
         ))}
       </div>
