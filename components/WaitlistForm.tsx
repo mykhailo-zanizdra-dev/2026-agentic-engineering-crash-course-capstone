@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { validateEmail } from "@/lib/waitlist";
+import { nextErrorOnEdit, validateEmail } from "@/lib/waitlist";
 
 const SUCCESS_MESSAGE = "Дякуємо! Це демо: вас не додано до списку, лист не надсилається.";
 
@@ -33,7 +33,11 @@ export function WaitlistForm() {
         type="email"
         autoComplete="email"
         value={email}
-        onChange={(event) => setEmail(event.target.value)}
+        onChange={(event) => {
+          const value = event.target.value;
+          setEmail(value);
+          setError((current) => nextErrorOnEdit(current, value));
+        }}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? "waitlist-error" : undefined}
         className="mt-2 w-full rounded-md border border-zinc-400 bg-background px-3 py-2"

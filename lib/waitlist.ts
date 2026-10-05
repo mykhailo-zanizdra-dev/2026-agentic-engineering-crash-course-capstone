@@ -16,3 +16,10 @@ export function validateEmail(value: string): EmailValidation {
   if (result.success) return { ok: true, email: result.data };
   return { ok: false, error: result.error.issues[0].message };
 }
+
+/** Error to show after an edit: re-validates only while an error is already displayed. */
+export function nextErrorOnEdit(currentError: string | null, value: string): string | null {
+  if (currentError === null) return null;
+  const result = validateEmail(value);
+  return result.ok ? null : result.error;
+}

@@ -115,3 +115,43 @@ test("nothing persists across a reload", async ({ page }) => {
   }));
   expect(stored).toEqual({ local: 0, session: 0, cookie: "" });
 });
+
+test("the error disappears as soon as the edited value becomes valid", async ({ page }) => {
+  const alert = page.locator("#waitlist").getByRole("alert");
+  await submit(page, "user@");
+  await expect(alert).toHaveText(INVALID);
+  await emailInput(page).fill("user@example.com");
+  await expect(alert).toBeEmpty();
+  await expect(emailInput(page)).not.toHaveAttribute("aria-invalid", "true");
+  await expect(page.getByText(SUCCESS)).toHaveCount(0);
+});
+
+test("the shown error follows the current value while it is invalid", async ({ page }) => {
+  const alert = page.locator("#waitlist").getByRole("alert");
+  await submit(page, "");
+  await expect(alert).toHaveText(REQUIRED);
+  await emailInput(page).fill("a");
+  await expect(alert).toHaveText(INVALID);
+});
+
+test("typing before the first submit shows no error", async ({ page }) => {
+  await emailInput(page).fill("user@");
+  await expect(page.locator("#waitlist").getByRole("alert")).toBeEmpty();
+});
+
+test("a cleared error does not return while typing", async ({ page }) => {
+  const alert = page.locator("#waitlist").getByRole("alert");
+  await submit(page, "user@");
+  await emailInput(page).fill("user@example.com");
+  await expect(alert).toBeEmpty();
+  await emailInput(page).fill("user@");
+  await expect(alert).toBeEmpty();
+});
+
+test("editing after success keeps the success state", async ({ page }) => {
+  await submit(page, "user@example.com");
+  await expect(page.locator("#waitlist").getByRole("status")).toHaveText(SUCCESS);
+  await emailInput(page).fill("user@");
+  await expect(page.locator("#waitlist").getByRole("status")).toHaveText(SUCCESS);
+  await expect(page.locator("#waitlist").getByRole("alert")).toBeEmpty();
+});

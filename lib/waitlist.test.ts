@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   EMAIL_INVALID_MESSAGE,
   EMAIL_REQUIRED_MESSAGE,
+  nextErrorOnEdit,
   validateEmail,
   waitlistEmailSchema,
 } from "@/lib/waitlist";
@@ -56,5 +57,23 @@ describe("validateEmail", () => {
 
   it("returns the trimmed email for valid input", () => {
     expect(validateEmail(" user@example.com ")).toEqual({ ok: true, email: "user@example.com" });
+  });
+});
+
+describe("nextErrorOnEdit", () => {
+  it("never introduces an error when none is shown", () => {
+    expect(nextErrorOnEdit(null, "user@")).toBeNull();
+    expect(nextErrorOnEdit(null, "")).toBeNull();
+  });
+
+  it("clears the shown error as soon as the value is valid", () => {
+    expect(nextErrorOnEdit(EMAIL_INVALID_MESSAGE, "user@example.com")).toBeNull();
+    expect(nextErrorOnEdit(EMAIL_REQUIRED_MESSAGE, "  user@example.com  ")).toBeNull();
+  });
+
+  it("makes the shown error follow the current invalid value", () => {
+    expect(nextErrorOnEdit(EMAIL_REQUIRED_MESSAGE, "a")).toBe(EMAIL_INVALID_MESSAGE);
+    expect(nextErrorOnEdit(EMAIL_INVALID_MESSAGE, "")).toBe(EMAIL_REQUIRED_MESSAGE);
+    expect(nextErrorOnEdit(EMAIL_INVALID_MESSAGE, "user@")).toBe(EMAIL_INVALID_MESSAGE);
   });
 });
