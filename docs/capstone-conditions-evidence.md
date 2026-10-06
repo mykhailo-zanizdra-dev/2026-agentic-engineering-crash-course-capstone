@@ -1,91 +1,91 @@
-# Capstone conditions: verified status and evidence
+# Умови capstone: перевірений стан і докази
 
-Verified on 2026-10-06 by the Maker (Claude Code, Sonnet 5.5, session id `bd80afe6-9ef9-4882-9227-a4b868e5866b`) against HEAD `5dfa1e1ee561548941d96117d5766e03232ea14b`, branch `mykhailo-zanizdra`. All commands below were run fresh in this session, not copied from earlier reports. Saved outputs: `docs/runs/2026-10-06-conditions-*.txt`.
+Перевірено 2026-10-06 агентом-Maker (Claude Code, Sonnet 5.5, сесія `bd80afe6-9ef9-4882-9227-a4b868e5866b`) на HEAD `5dfa1e1ee561548941d96117d5766e03232ea14b`, гілка `mykhailo-zanizdra`. Усі команди нижче запущено заново в цій сесії, а не взято зі старих звітів. Збережені виводи: `docs/runs/2026-10-06-conditions-*.txt`. Файл українською за прямим проханням власника, попри правило AGENTS.md про англійську документацію.
 
-Sources of the conditions: `RUBRIC.md` (acceptance), `README.md` (submission steps, course material, not edited), `PRODUCT_BRIEF.md` and `AGENTS.md` (Definition of Done). Verdicts: **MET**, **PARTLY**, **NOT MET**, **NOT CLAIMED** (optional practice, deliberately not used), **UNKNOWN** (could not be read from here); a qualifier after MET ("with caveats", "as of HEAD") marks a limit stated in the same row. Anything only Mykhailo can supply is marked `TODO(Mykhailo)` and is not filled in here.
+Джерела умов: `RUBRIC.md` (приймання), `README.md` (кроки здачі, матеріал курсу, не редагувався), `PRODUCT_BRIEF.md` і `AGENTS.md` (Definition of Done). Вердикти: **ВИКОНАНО**, **ЧАСТКОВО**, **НЕ ВИКОНАНО**, **НЕ ЗАЯВЛЕНО** (необов'язкова практика, свідомо не використана), **НЕВІДОМО** (звідси не вдалося прочитати). Застереження після «ВИКОНАНО» («із застереженнями», «станом на HEAD») означає обмеження, описане в тому самому рядку. Усе, що може дати лише Mykhailo, позначено `TODO(Mykhailo)` і тут не заповнено.
 
-## 1. Fresh runs
+## 1. Свіжі прогони
 
-| Command | Result | Output |
+| Команда | Результат | Вивід |
 |---|---|---|
-| `git status`, `git log` | tracked tree clean; HEAD equals `origin/mykhailo-zanizdra` (`5dfa1e1`), so nothing is left unpushed before this file | n/a |
-| `pnpm check` (run 1) | **exit 1**: 1 failed, 57 passed. `[mobile-375] landing.spec.ts:107 FAQ marker rotates…`: `answerRendered` was `false` at the mid-animation sample | `docs/runs/2026-10-06-conditions-check-run1-fail.txt` |
-| `pnpm check` (run 2) | exit 0: typecheck, lint, Vitest 15 passed, Playwright 58 passed (Chromium 375 px and 1440 px) | `docs/runs/2026-10-06-conditions-check-run2-pass.txt` |
-| `pnpm check` (run 3, output not saved) | exit 0, 58 passed | n/a |
-| `pnpm test:e2e` ×5 (output not saved) | 58 passed each time | n/a |
-| `pnpm build` | exit 0, `/` static | `docs/runs/2026-10-06-conditions-build.txt` |
-| `pnpm exec openspec validate --all --strict` | exit 0, 2 specs passed (two INFO notes about long requirement text); no active changes remain | `docs/runs/2026-10-06-conditions-openspec-validate.txt` |
-| `pnpm hooks:selftest` | exit 0, 47 passed; **synthetic** payloads, not live activation | `docs/runs/2026-10-06-conditions-hooks-selftest.txt` |
-| `pnpm agent:log` | exit 0, **live** log: 349 completed, 3 unmatched, 9 failed, 0 interrupted, across 10 Claude sessions | `docs/runs/2026-10-06-conditions-agent-log-summary.txt` |
+| `git status`, `git log` | відстежуване дерево чисте; HEAD дорівнює `origin/mykhailo-zanizdra` (`5dfa1e1`), тож до цього файлу незапушених комітів не було | немає |
+| `pnpm check` (прогін 1) | **exit 1**: 1 впав, 57 пройшли. `[mobile-375] landing.spec.ts:107 FAQ marker rotates…`: `answerRendered` дорівнював `false` у проміжній точці анімації | `docs/runs/2026-10-06-conditions-check-run1-fail.txt` |
+| `pnpm check` (прогін 2) | exit 0: typecheck, lint, Vitest 15 пройшли, Playwright 58 пройшли (Chromium 375 px і 1440 px) | `docs/runs/2026-10-06-conditions-check-run2-pass.txt` |
+| `pnpm check` (прогін 3, вивід не збережено) | exit 0, 58 пройшли | немає |
+| `pnpm test:e2e` ×5 (вивід не збережено) | щоразу 58 пройшли | немає |
+| `pnpm build` | exit 0, `/` статична | `docs/runs/2026-10-06-conditions-build.txt` |
+| `pnpm exec openspec validate --all --strict` | exit 0, 2 специфікації пройшли (два INFO про довгий текст вимог); активних змін немає | `docs/runs/2026-10-06-conditions-openspec-validate.txt` |
+| `pnpm hooks:selftest` | exit 0, 47 пройшли; **синтетичні** дані, не жива активація | `docs/runs/2026-10-06-conditions-hooks-selftest.txt` |
+| `pnpm agent:log` | exit 0, **живий** журнал: 349 завершених, 3 без пари, 9 невдалих, 0 перервано, у 10 сесіях Claude | `docs/runs/2026-10-06-conditions-agent-log-summary.txt` |
 
-**Finding from this verification (intermittent failure, cause unknown, not fixed here).** The FAQ test added in c231505 failed once: the first `pnpm check` of this session exited 1 on it. Afterwards 2 `pnpm check` runs (one saved) and 5 `pnpm test:e2e` runs (unsaved) passed. The assertion `p.checkVisibility()` immediately after two animation frames in `tests/e2e/landing.spec.ts:134-139` checks that the answer is rendered two animation frames after the click, which the spec requires (`docs/reviews/2026-10-05-polish-spec-review.md`). The intermittent `false` is either test timing or a real, intermittent spec violation at 375 px; it is not diagnosed. Per `AGENTS.md` the test was not modified to get green. Diagnosis needs Mykhailo's go; until then, "`pnpm check` is green" holds for 2 of the 3 `pnpm check` runs seen today, not for every run.
+**Знахідка цієї перевірки (нестабільний збій, причину не з'ясовано, не виправлено).** Тест FAQ, доданий у c231505, впав один раз: перший `pnpm check` цієї сесії завершився exit 1. Після цього 2 прогони `pnpm check` (один збережено) і 5 прогонів `pnpm test:e2e` (не збережено) пройшли. Перевірка в `tests/e2e/landing.spec.ts:134-139` вимагає, щоб відповідь була відрендерена через два кадри анімації після кліку, і це вимога специфікації (`docs/reviews/2026-10-05-polish-spec-review.md`). Випадкове `false` означає або проблему з таймінгом тесту, або справжнє рідкісне порушення специфікації на 375 px; це не діагностовано. За `AGENTS.md` тест не змінювався, щоб позеленіти. Діагностика потребує «go» від Mykhailo; доти твердження «`pnpm check` зелений» справджується для 2 із 3 прогонів `pnpm check` за сьогодні, але не для кожного.
 
-## 2. RUBRIC.md acceptance (the four things)
+## 2. Приймання за RUBRIC.md (чотири пункти)
 
-| # | Condition | Verdict | Proof and gap |
+| № | Умова | Вердикт | Доказ і прогалина |
 |---|---|---|---|
-| 1 | A project exists and works, taken through the full cycle | **MET** | Eight-section page at `/` with a demo waitlist form; brief → AGENTS.md → OpenSpec → tests → code → `pnpm check` → Checker → fixes. Section 1 above; commits 18baac5 → b921515 → f86752a → d3eb114 → 3c05168; second cycle 2a44921 → e5b9ab7 → c231505 → 7521cb6. |
-| 2 | Practices are named | **PARTLY** | Named in `docs/pr-description-draft.md`, but that draft predates the second change (`polish-waitlist-and-faq`): it cites 12 unit and 38 E2E tests (now 15 and 58), has no mention of the second cycle, and still has `TODO` fields. The text actually in PR #1 could not be read from this environment (no `gh` CLI), so what the PR says is unknown. |
-| 3 | Every named practice has proof | **PARTLY** | Per practice, section 3. Weakest: live blocked action (none saved), loops (not claimed). |
-| 4 | A 1–2 minute video, and the PR says what the human decided vs the agent | **NOT MET** | No video link anywhere in the repo: `TODO(Mykhailo)`. Human decisions in the repo are limited to the approvals in `PRODUCT_BRIEF.md`; the draft's own section is `TODO(Mykhailo)`. |
+| 1 | Є проєкт, він працює, проведений через повний цикл | **ВИКОНАНО** | Сторінка з вісьмома секціями на `/` і демо-форма waitlist; бриф → AGENTS.md → OpenSpec → тести → код → `pnpm check` → Checker → виправлення. Розділ 1; коміти 18baac5 → b921515 → f86752a → d3eb114 → 3c05168; другий цикл 2a44921 → e5b9ab7 → c231505 → 7521cb6. |
+| 2 | Названо практики | **ЧАСТКОВО** | Названі в `docs/pr-description-draft.md`, але чернетка старіша за другу зміну (`polish-waitlist-and-faq`): у ній 12 юніт- і 38 E2E-тестів (зараз 15 і 58), немає другого циклу, лишились поля `TODO`. Справжній текст PR #1 звідси прочитати не вдалося (немає `gh`), тож що в PR написано — невідомо. |
+| 3 | Кожна практика має доказ | **ЧАСТКОВО** | По практиках — розділ 3. Найслабше: заблокована жива дія (збереженої немає), цикли (не заявлені). |
+| 4 | Відео 1–2 хв, і в PR сказано, що вирішувала людина, а що агент | **НЕ ВИКОНАНО** | Посилання на відео в репозиторії немає: `TODO(Mykhailo)`. Рішення людини в репозиторії обмежені затвердженнями в `PRODUCT_BRIEF.md`; власний розділ чернетки — `TODO(Mykhailo)`. |
 
-RUBRIC "returned for rework" traps: *practices without proof* (see section 3); *description written backwards, nothing went wrong* (mitigated by section 4 below and the "what went wrong" part of `docs/rubric-audit.md`); *no human decisions visible* (open, see section 5); *video over 2 minutes or without the agentic story* (not recorded yet).
+Причини повернення за RUBRIC: *практики без доказів* (розділ 3); *опис заднім числом, ніде нічого не пішло не так* (пом'якшено розділом 4 і частиною «що пішло не так» у `docs/rubric-audit.md`); *не видно рішень людини* (відкрито, розділ 5); *відео довше 2 хвилин або без розповіді про агентну розробку* (ще не записано).
 
-## 3. Practice by practice
+## 3. Практика за практикою
 
-| Practice | Verdict | Proof | Gap |
+| Практика | Вердикт | Доказ | Прогалина |
 |---|---|---|---|
-| Context engineering, static | **MET** | `AGENTS.md` (project rules added in 61b2981 on top of the scaffold's generated block: spec-first, scope, `pnpm check`, protected env files), `CLAUDE.md`, `PRODUCT_BRIEF.md`, `TECH_STACK.md`, `openspec/config.yaml`. Rules that visibly worked: Checker findings cite them and the violations were fixed: `docs/reviews/2026-10-05-pnpm-check-setup-review.md` (tasks ticked without a saved run), `…-waitlist-validation-review.md`. | The repo has no commit "agent behaved differently after the rule changed"; the evidence is review findings. |
-| Context engineering, dynamic (hooks) | **PARTLY** | **Live:** `pnpm agent:log` today shows 349 completed actions from 10 real sessions (file above); hooks `.claude/hooks/log-action.mjs`, `protect-env.mjs`; earlier live statement in `docs/reviews/2026-10-05-workflow-update-review.md`. **Synthetic, kept apart:** `pnpm hooks:selftest` (47 passed) and `docs/runs/2026-10-04-*.json`. Raw `.agent-log/actions.jsonl` stays git-ignored (`.gitignore:46`) and is not committed. | No saved example of a live **blocked** action; the 9 failed actions are failed commands, not guard denials. The summary also counts this verification session. |
-| Loops | **NOT CLAIMED** | Only manual reruns after test bugs exist (`docs/runs/2026-10-05-*-check-fail.txt` → `…-pass.txt`, `…-polish-red*.txt` → `…-polish-green.txt`). They are manual, not a loop. | The PR must not claim loop engineering. |
-| Verification | **MET, with caveats** | `pnpm check` (section 1). Unit tests `lib/waitlist.test.ts` share the Zod schema with the form. Red evidence for the second change: `docs/runs/2026-10-05-polish-red.txt` (3 unit and 10 E2E tests failing, 5 per width, before the code) and `…-polish-red2.txt` (current FAQ tests with the FAQ CSS removed fail), then `…-polish-green.txt` (full run, exit 0). First cycle: `…-waitlist-unit-red.txt` → `…-waitlist-unit-green.txt`. | Red→green is shown by saved run files, not by git history: tests and code share one commit (e5b9ab7, c231505). First-cycle pairs are not clean (tests rewritten after review, one truncated red file; see `docs/rubric-audit.md`). The flaky test above. No CI. |
-| maker ≠ checker | **MET** | `.claude/agents/reviewer.md` (Opus, read-only). Reports in `docs/reviews/` (13 files). Findings that changed the work: spec review 1 P2 + 4 P3; four slice reviews 7 findings; workflow update 1 P3; final review 1 P3; RUBRIC audit 11 findings; second change: spec review 6 findings (2 P2: undefined animation duration, untested "no other animation"), implementation review 8 findings (3 P2: closing not tested, outdated red evidence, partial green file, plus 5 P3). Each report records its resolution. Earlier, Codex was Checker of the hooks work and returned "changes required" (`docs/reviews/2026-10-04-logging-hooks-review.md`); in `docs/reviews/2026-10-04-precommit-review.md` Codex was Maker and Claude Code Checker (1 P2, 3 P3). | Both roles are Claude Code (approved workflow, not a two-tool review). Several Checker invocation ids and all Maker session ids except two are unknown. The fixes after the second change's implementation review were not re-reviewed. |
-| Spec first (SDD) | **MET** | OpenSpec change `agentflow-landing` committed in 18baac5, before any feature code (b921515 onward). Second change `polish-waitlist-and-faq` committed in 2a44921 before its code (e5b9ab7, c231505); it is the case of a spec changing because reality did not match: its MODIFIED requirements amend the archived specs (`openspec/specs/*`). Both changes archived (9f9b095, 7521cb6). | The scaffold (4666845) predates the spec; not claimed otherwise. Spec-review fixes in the first cycle landed before the first commit, so history does not show them. |
-| Trust-level log | **NOT CLAIMED** | `templates/autonomy-log.md` untouched. | A log written now would be retroactive. |
-| Project Factory | **NOT CLAIMED** | Not used. | n/a |
+| Контекст-інженерія, статичний | **ВИКОНАНО** | `AGENTS.md` (правила проєкту додано в 61b2981 поверх згенерованого блоку скафолду: спершу специфікація, межі обсягу, `pnpm check`, захист env-файлів), `CLAUDE.md`, `PRODUCT_BRIEF.md`, `TECH_STACK.md`, `openspec/config.yaml`. Правила, що спрацювали: зауваження Checker цитують їх, порушення виправлені: `docs/reviews/2026-10-05-pnpm-check-setup-review.md` (задачі відмічені без збереженого прогону), `…-waitlist-validation-review.md`. | Немає коміту «агент вчинив інакше після зміни правила»; доказ — зауваження рев'ю. |
+| Контекст-інженерія, динамічний (hooks) | **ЧАСТКОВО** | **Живе:** `pnpm agent:log` сьогодні показує 349 завершених дій із 10 справжніх сесій (файл вище); hooks `.claude/hooks/log-action.mjs`, `protect-env.mjs`; раніша заява про живу активацію в `docs/reviews/2026-10-05-workflow-update-review.md`. **Синтетичне, окремо:** `pnpm hooks:selftest` (47 пройшли) і `docs/runs/2026-10-04-*.json`. Сирий `.agent-log/actions.jsonl` у git-ignore (`.gitignore:46`) і не комітиться. | Немає збереженого прикладу живої **заблокованої** дії; 9 невдалих дій — це невдалі команди, а не відмови захисту. Підсумок враховує й цю перевірочну сесію. |
+| Цикли | **НЕ ЗАЯВЛЕНО** | Є лише ручні повторні прогони після помилок тестів (`docs/runs/2026-10-05-*-check-fail.txt` → `…-pass.txt`, `…-polish-red*.txt` → `…-polish-green.txt`). Це ручні прогони, не цикл. | PR не повинен заявляти loop engineering. |
+| Верифікація | **ВИКОНАНО, із застереженнями** | `pnpm check` (розділ 1). Юніт-тести `lib/waitlist.test.ts` ділять Zod-схему з формою. Червоний доказ для другої зміни: `docs/runs/2026-10-05-polish-red.txt` (до коду падали 3 юніт- і 10 E2E-тестів, по 5 на ширину) і `…-polish-red2.txt` (поточні тести FAQ без FAQ-CSS падають), потім `…-polish-green.txt` (повний прогін, exit 0). Перший цикл: `…-waitlist-unit-red.txt` → `…-waitlist-unit-green.txt`. | Червоне→зелене видно за збереженими файлами, а не за історією git: тести й код в одному коміті (e5b9ab7, c231505). Пари першого циклу неідеальні (тести переписано після рев'ю, один червоний файл обрізаний; див. `docs/rubric-audit.md`). Нестабільний тест вище. CI немає. |
+| maker ≠ checker | **ВИКОНАНО** | `.claude/agents/reviewer.md` (Opus, лише читання). Звіти в `docs/reviews/` (13 файлів). Зауваження, що змінили роботу: рев'ю специфікації 1 P2 + 4 P3; чотири рев'ю зрізів, 7 зауважень; зміна воркфлоу 1 P3; фінальне рев'ю 1 P3; аудит RUBRIC 11 зауважень; друга зміна: рев'ю специфікації 6 зауважень (2 P2: невизначена тривалість анімації, нетестоване «жодної іншої анімації»), рев'ю реалізації 8 зауважень (3 P2: закриття не протестовано, застарілий червоний доказ, неповний зелений файл, плюс 5 P3). У кожному звіті записано резолюцію. Раніше Codex був Checker для hooks і повернув «changes required» (`docs/reviews/2026-10-04-logging-hooks-review.md`); у `docs/reviews/2026-10-04-precommit-review.md` Codex був Maker, а Claude Code — Checker (1 P2, 3 P3). | Обидві ролі виконує Claude Code (затверджений воркфлоу, не рев'ю двома інструментами). Частина ідентифікаторів викликів Checker і всі ідентифікатори сесій Maker, крім двох, невідомі. Виправлення після рев'ю реалізації другої зміни не ревʼюились повторно. |
+| Специфікації наперед (SDD) | **ВИКОНАНО** | OpenSpec-зміна `agentflow-landing` закомічена в 18baac5 до будь-якого коду фічі (b921515 і далі). Друга зміна `polish-waitlist-and-faq` закомічена в 2a44921 до свого коду (e5b9ab7, c231505); це випадок, коли специфікацію змінили, бо реальність не збіглася: її MODIFIED-вимоги правлять заархівовані специфікації (`openspec/specs/*`). Обидві зміни заархівовано (9f9b095, 7521cb6). | Скафолд (4666845) старіший за специфікацію; інакше не заявляється. Виправлення за рев'ю специфікації в першому циклі потрапили до першого коміту, тож історія їх не показує. |
+| Журнал рівнів довіри | **НЕ ЗАЯВЛЕНО** | `templates/autonomy-log.md` не змінений. | Журнал, написаний зараз, був би заднім числом. |
+| Project Factory | **НЕ ЗАЯВЛЕНО** | Не використовувався. | — |
 
-## 4. What went wrong (real, from saved evidence)
+## 4. Що пішло не так (реальне, зі збережених доказів)
 
-- Tasks 1.1–1.4 ticked with no saved run (`…-pnpm-check-setup-review.md`).
-- Test bugs fixed by the Maker: regex typo, `alert` locator clash with the Next.js route announcer (`docs/runs/2026-10-05-*-check-fail.txt`).
-- Live regions mounted with their text, possibly not announced (P2, fixed, not verified with a screen reader).
-- Second change: the first spec wording ("short" animation, "no other animation") was untestable (Checker P2×2); the implementation review was returned as incomplete for evidence gaps; the assumption that `getAnimations()` exposes the `::details-content` transition was wrong (`docs/runs/2026-10-05-polish-getanimations-diagnostic.txt`).
-- Today: the flaky FAQ test (section 1).
-- History looks batch-committed: 18baac5 and 93d408e share the timestamp 16:45:02; e5b9ab7, c231505, 7521cb6 and 5dfa1e1 are within 3 seconds (23:25:33–23:25:36). `TODO(Mykhailo)`: say in the PR why.
+- Задачі 1.1–1.4 відмічені без збереженого прогону (`…-pnpm-check-setup-review.md`).
+- Помилки тестів, виправлені Maker: опечатка в regex, конфлікт локатора `alert` з анонсером маршрутів Next.js (`docs/runs/2026-10-05-*-check-fail.txt`).
+- Живі регіони монтувались разом із текстом, тож могли не озвучуватись (P2, виправлено, зі скрінрідером не перевірено).
+- Друга зміна: перше формулювання специфікації («коротка» анімація, «жодної іншої анімації») було нетестовним (два P2 від Checker); рев'ю реалізації повернуто як неповне через прогалини в доказах; припущення, що `getAnimations()` показує перехід `::details-content`, було хибним (`docs/runs/2026-10-05-polish-getanimations-diagnostic.txt`).
+- Сьогодні: нестабільний тест FAQ (розділ 1).
+- Історія виглядає закомічена пакетами: 18baac5 і 93d408e мають однакову мітку 16:45:02; e5b9ab7, c231505, 7521cb6 і 5dfa1e1 лежать у межах 3 секунд (23:25:33–23:25:36). `TODO(Mykhailo)`: поясни в PR, чому.
 
-## 5. What the human decided
+## 5. Що вирішувала людина
 
-In the repository: the product owner's approval of the brief, stack, scope and the 2026-10-05 workflow update (Claude Code fills both Maker and Checker; `PRODUCT_BRIEF.md`, `docs/reviews/2026-10-05-workflow-update-review.md`). Checkers only reported; the Maker wrote specs, tests, code and evidence.
+У репозиторії: затвердження власником продукту брифу, стеку, меж обсягу та зміни воркфлоу від 2026-10-05 (Claude Code виконує обидві ролі, Maker і Checker; `PRODUCT_BRIEF.md`, `docs/reviews/2026-10-05-workflow-update-review.md`). Checker лише звітували; Maker писав специфікації, тести, код і докази.
 
-Reported by the coordinating session from Mykhailo's messages, **not verifiable in the repo, Mykhailo to confirm and word in his own terms**: the second change came out of Mykhailo's own review of the page (error not clearing; FAQ without animation), and its spec was approved with a «далі»; the new dependencies for `pnpm check` were approved with a «go»; every thread waited for a «go»; Mykhailo pushes the branch personally (a push from this Mac returned 403). `TODO(Mykhailo)`: what you stopped, rolled back or decided differently.
+З повідомлень Mykhailo, переданих координуючою сесією, **у репозиторії не перевіряється, Mykhailo має підтвердити й сформулювати власними словами**: друга зміна виникла з його власного огляду сторінки (помилка не зникала; FAQ без анімації), її специфікацію затверджено словом «далі»; нові залежності для `pnpm check` затверджено словом «go»; кожен етап чекав на «go»; гілку пушить сам Mykhailo (push з цього Mac повертав 403). `TODO(Mykhailo)`: що ти зупинив, відкотив або вирішив інакше.
 
-## 6. Submission steps from README.md
+## 6. Кроки здачі з README.md
 
-| Step | Verdict | Proof |
+| Крок | Вердикт | Доказ |
 |---|---|---|
-| Fork the course repo | **MET** | `origin` is `mykhailo-zanizdra-dev/2026-agentic-engineering-crash-course-capstone`. |
-| Project on its own branch; course root files untouched | **MET** | Branch `mykhailo-zanizdra`; `git diff cbee9be HEAD -- README.md RUBRIC.md .github templates` is empty. The project sits at the repo root, not in `submissions/<name>/` (README calls that only the most convenient layout). |
-| Branch pushed | **MET (as of HEAD 5dfa1e1)** | `origin/mykhailo-zanizdra` equals HEAD. Commits made after this file (this evidence) are local until Mykhailo pushes. |
-| PR open with the template filled | **UNKNOWN** | The coordinator reports PR #1 exists; this environment has no `gh`, so title and body were not read. Template fields: project and code location (branch `mykhailo-zanizdra`, root of the repo); name `TODO(Mykhailo)`; video link `TODO(Mykhailo)`; practices (draft is stale, section 2); tools and MCP; human vs agent `TODO(Mykhailo)`; verification (use section 1). |
+| Fork репозиторію курсу | **ВИКОНАНО** | `origin` — `mykhailo-zanizdra-dev/2026-agentic-engineering-crash-course-capstone`. |
+| Проєкт на окремій гілці; кореневі файли курсу не змінені | **ВИКОНАНО** | Гілка `mykhailo-zanizdra`; `git diff cbee9be HEAD -- README.md RUBRIC.md .github templates` порожній. Проєкт у корені репозиторію, а не в `submissions/<ім'я>/` (README називає це лише найзручнішим розташуванням). |
+| Гілку запушено | **ВИКОНАНО (станом на HEAD 5dfa1e1)** | `origin/mykhailo-zanizdra` дорівнює HEAD. Коміти після цього файлу (ці докази) лишаються локальними, поки Mykhailo не запушить. |
+| PR відкрито, шаблон заповнено | **НЕВІДОМО** | Координатор повідомляє, що PR #1 існує; тут немає `gh`, тож заголовок і опис не прочитано. Поля шаблону: проєкт і де код (гілка `mykhailo-zanizdra`, корінь репозиторію); ім'я `TODO(Mykhailo)`; посилання на відео `TODO(Mykhailo)`; практики (чернетка застаріла, розділ 2); інструменти й MCP; що вирішувала людина `TODO(Mykhailo)`; перевірка (використай розділ 1). |
 
-## 7. Brief and AGENTS.md Definition of Done
+## 7. Бриф і Definition of Done з AGENTS.md
 
-| Item | Verdict | Proof |
+| Пункт | Вердикт | Доказ |
 |---|---|---|
-| Eight sections in order; 375 px and 1440 px without horizontal overflow | **MET** | `tests/e2e/landing.spec.ts` (sections, `no horizontal overflow`), both Chromium projects green in run 2. |
-| Labeled, keyboard-accessible form; empty, invalid, valid, correct-and-resubmit; demo note | **MET** | `tests/e2e/waitlist.spec.ts`, `lib/waitlist.test.ts` (run 2). |
-| Visual inspection at both widths | **PARTLY** | Agent-viewed only: `docs/runs/2026-10-05-visual-inspection.md`, `…-polish-visual-inspection.md`, `docs/runs/screenshots/`. No human inspection recorded: `TODO(Mykhailo)`. |
-| `pnpm check` passes and actual output saved | **MET, with the flaky caveat** | Section 1; `…-polish-green.txt`, `…-final-check.txt`. |
-| Independent Checker, findings resolved | **MET** | Section 3, maker ≠ checker. |
-| Spec committed before feature code; Conventional Commits | **MET** | Commit order above. |
-| PR links specs, reviews, runs, commits; separates human and agent; video | **PARTLY** | Draft exists but is stale; video missing. |
+| Вісім секцій по порядку; 375 px і 1440 px без горизонтального переповнення | **ВИКОНАНО** | `tests/e2e/landing.spec.ts` (секції, `no horizontal overflow`), обидва проєкти Chromium зелені в прогоні 2. |
+| Форма з підписом, керована клавіатурою; порожній, хибний, валідний email, виправлення й повторна відправка; позначка демо | **ВИКОНАНО** | `tests/e2e/waitlist.spec.ts`, `lib/waitlist.test.ts` (прогін 2). |
+| Візуальна перевірка обох ширин | **ЧАСТКОВО** | Лише очима агента: `docs/runs/2026-10-05-visual-inspection.md`, `…-polish-visual-inspection.md`, `docs/runs/screenshots/`. Людської перевірки не записано: `TODO(Mykhailo)`. |
+| `pnpm check` проходить, фактичний вивід збережено | **ВИКОНАНО, із застереженням про нестабільний тест** | Розділ 1; `…-polish-green.txt`, `…-final-check.txt`. |
+| Незалежний Checker, зауваження розв'язані | **ВИКОНАНО** | Розділ 3, maker ≠ checker. |
+| Специфікація закомічена до коду фічі; Conventional Commits | **ВИКОНАНО** | Порядок комітів вище. |
+| PR посилається на специфікації, рев'ю, прогони, коміти; розділяє людину й агента; відео | **ЧАСТКОВО** | Чернетка є, але застаріла; відео немає. |
 
-## 8. Open items
+## 8. Відкриті пункти
 
-1. Mykhailo: name, video link, own decisions, commit-timing explanation, human visual check (all `TODO(Mykhailo)`).
-2. Refresh `docs/pr-description-draft.md` and `docs/rubric-audit.md` (stale counts, no second change, "nothing is pushed yet"); not edited here.
-3. Decide whether to fix the flaky FAQ test (needs a go; touches tests).
-4. Push this commit and update PR #1 (Mykhailo).
-5. The video narration is in `docs/video-script.md` (written after this file; it states the gaps above).
+1. Mykhailo: ім'я, посилання на відео, власні рішення, пояснення часу комітів, людська візуальна перевірка (усе `TODO(Mykhailo)`).
+2. Оновити `docs/pr-description-draft.md` і `docs/rubric-audit.md` (застарілі кількості, немає другої зміни, «нічого не запушено»); тут не редагувалися.
+3. Вирішити, чи виправляти нестабільний тест FAQ (потрібне «go»; зачіпає тести).
+4. Запушити цей коміт і оновити PR #1 (Mykhailo).
+5. Текст для відео — у `docs/video-script.md` (написано після цього файлу; чесно згадує прогалини вище).
 
-Review of this file by an independent Checker: `docs/reviews/2026-10-06-capstone-conditions-review.md`.
+Рев'ю цього файлу незалежним Checker: `docs/reviews/2026-10-06-capstone-conditions-review.md` (проведено на англомовній версії; зміст однаковий, виправлення з рев'ю враховано).
